@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <payment>
+            <groups>
+                <ultradev_paghiperpix translate="label" module="ultradev_paghiperpix">
+                    <comment>
+                    <![CDATA[
+                    <p><strong>UltraDev PagHiper Pix</strong> — Pix dinâmico puro via PagHiper (sem boleto acoplado).</p>
+                    <p>1) Gere o ApiKey e o Token em <a href="https://www.paghiper.com/painel/credenciais/" target="_blank">https://www.paghiper.com/painel/credenciais/</a> (a mesma conta usada no módulo de boleto pode ser reaproveitada).</p>
+                    ]]>
+                    </comment>
+                    <label>UltraDev - PagHiper Pix</label>
+                    <sort_order>1002</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Habilitado</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </active>
+                        <title translate="label">
+                            <label>Título</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+                        <information translate="label">
+                            <label>Descrição</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </information>
+                        <apikey translate="label">
+                            <label>ApiKey</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[<a href="https://www.paghiper.com/painel/credenciais/" target="_blank">Gerar aqui</a>]]></comment>
+                        </apikey>
+                        <token translate="label">
+                            <label>Token</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[<a href="https://www.paghiper.com/painel/credenciais/" target="_blank">Gerar aqui</a>]]></comment>
+                        </token>
+                        <days_due_date translate="label">
+                            <label>Dias para vencimento do Pix</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Ex.: 1 (Pix expira em 1 dia)</comment>
+                        </days_due_date>
+                        <polling_interval translate="label">
+                            <label>Intervalo de verificação do pagamento (segundos)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Usado pelo JS da página de sucesso para consultar se o Pix já caiu. Recomendado: 5 a 10.</comment>
+                            <validate>validate-digits-range digits-range-3-30</validate>
+                        </polling_interval>
+                        <order_status translate="label">
+                            <label>Status do pedido (aguardando pagamento)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>8</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+                        <allowspecific translate="label">
+                            <label>Aplicável a países específicos</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>9</sort_order>
+                            <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                        </allowspecific>
+                        <specificcountry translate="label">
+                            <label>Países permitidos</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>10</sort_order>
+                            <source_model>adminhtml/system_config_source_country</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <depends>
+                                <allowspecific>1</allowspecific>
+                            </depends>
+                        </specificcountry>
+                        <sort_order translate="label">
+                            <label>Ordem de exibição</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>11</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sort_order>
+                    </fields>
+                </ultradev_paghiperpix>
+            </groups>
+        </payment>
+    </sections>
+</config>
