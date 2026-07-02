@@ -26,6 +26,7 @@
             <ultradev_paghiperpix_setup>
                 <setup>
                     <module>UltraDev_PagHiperPix</module>
+                    <class>Mage_Sales_Model_Resource_Setup</class>
                 </setup>
             </ultradev_paghiperpix_setup>
         </resources>
