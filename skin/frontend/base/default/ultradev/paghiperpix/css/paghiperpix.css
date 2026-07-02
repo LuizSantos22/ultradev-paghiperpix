@@ -1,0 +1,110 @@
+.paghiperpix-box {
+    max-width: 420px;
+    margin: 20px auto;
+    padding: 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: center;
+    background: #fff;
+}
+
+.paghiperpix-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.paghiperpix-title--success {
+    color: #28A745;
+}
+
+.paghiperpix-duedate {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.paghiperpix-qrcode img {
+    display: block;
+    margin: 0 auto 16px;
+    border: 1px solid #eee;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.paghiperpix-instructions {
+    font-size: 13px;
+    color: #444;
+    margin-bottom: 12px;
+}
+
+.paghiperpix-emv {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.paghiperpix-emv input {
+    flex: 1;
+    padding: 8px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f7f7f7;
+}
+
+.paghiperpix-emv .button {
+    padding: 8px 14px;
+    border-radius: 5px;
+    background: #2c85c8;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.paghiperpix-emv .button:hover {
+    opacity: 0.9;
+}
+
+.paghiperpix-copy-feedback {
+    display: block;
+    min-height: 16px;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.paghiperpix-copy-feedback.is-success {
+    color: #28A745;
+}
+
+.paghiperpix-copy-feedback.is-error {
+    color: #b73741;
+}
+
+.paghiperpix-status {
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.paghiperpix-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #ddd;
+    border-top-color: #2c85c8;
+    border-radius: 50%;
+    display: inline-block;
+    animation: paghiperpix-spin 0.8s linear infinite;
+}
+
+@keyframes paghiperpix-spin {
+    to { transform: rotate(360deg); }
+}
+
+.paghiperpix-box--error {
+    border-color: #b73741;
+    color: #b73741;
+}
