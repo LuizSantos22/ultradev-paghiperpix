@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <UltraDev_PagHiperPix>
+            <version>1.0.0</version>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mage_Payment/>
+            </depends>
+        </UltraDev_PagHiperPix>
+    </modules>
+</config>
