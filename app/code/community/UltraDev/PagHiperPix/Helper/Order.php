@@ -118,6 +118,10 @@ class UltraDev_PagHiperPix_Helper_Order extends Mage_Core_Helper_Abstract
      * Responde a notificação inicial da PagHiper com o token do lojista,
      * conforme exigido pelo fluxo de notificação de status do Pix.
      *
+     * IMPORTANTE: o apiKey enviado aqui é SEMPRE o configurado na loja,
+     * nunca o que vier no payload do POST recebido (que não é confiável,
+     * já que qualquer um pode forjar uma requisição pra esse endpoint).
+     *
      * @param array $notificationData Dados recebidos no POST inicial (apiKey, notification_id, transaction_id, notification_date, source_api)
      * @return array|null status_request completo devolvido pela PagHiper
      */
@@ -127,7 +131,7 @@ class UltraDev_PagHiperPix_Helper_Order extends Mage_Core_Helper_Abstract
 
         $data = [
             'token'             => $this->helper()->getToken(),
-            'apiKey'            => $notificationData['apiKey'] ?? $this->helper()->getApiKey(),
+            'apiKey'            => $this->helper()->getApiKey(),
             'transaction_id'    => $notificationData['transaction_id'] ?? '',
             'notification_id'   => $notificationData['notification_id'] ?? '',
         ];
@@ -143,6 +147,12 @@ class UltraDev_PagHiperPix_Helper_Order extends Mage_Core_Helper_Abstract
 
     /**
      * Aplica o status/transação retornados pela PagHiper no pedido Magento.
+     *
+     * Antes de faturar, confere:
+     * 1) que o método de pagamento do pedido é de fato o nosso (ultradev_paghiperpix);
+     * 2) que o valor confirmado pela PagHiper bate com o total do pedido
+     *    (quando a API devolve esse dado), como camada extra de proteção
+     *    contra qualquer inconsistência de order_id/transaction_id.
      *
      * @param Mage_Sales_Model_Order $order
      * @param array $statusRequest
@@ -170,10 +180,31 @@ class UltraDev_PagHiperPix_Helper_Order extends Mage_Core_Helper_Abstract
 
         $this->addInformation($order, $additional);
 
-        if (
-            in_array($status, ['paid', 'completed'], true)
-            && $order->getInvoiceCollection()->count() <= 0
-        ) {
+        $isPagHiperPixOrder = $order->getPayment()
+            && $order->getPayment()->getMethod() === 'ultradev_paghiperpix';
+
+        if (!$isPagHiperPixOrder) {
+            $this->helper()->log(
+                'PagHiperPix - notificação ignorada: pedido #' . $order->getIncrementId()
+                . ' não usa o método ultradev_paghiperpix.'
+            );
+            return;
+        }
+
+        if (in_array($status, ['paid', 'completed'], true) && $order->getInvoiceCollection()->count() <= 0) {
+            $valueCents = $statusRequest['value_cents'] ?? $statusRequest['transaction_amount'] ?? null;
+
+            if ($valueCents !== null) {
+                $expectedCents = (int) round($order->getGrandTotal() * 100);
+                if ((int) $valueCents !== $expectedCents) {
+                    $this->helper()->log(
+                        'PagHiperPix - valor divergente no pedido #' . $order->getIncrementId()
+                        . ': esperado ' . $expectedCents . ', recebido ' . $valueCents . '. Pedido NÃO faturado automaticamente.'
+                    );
+                    return;
+                }
+            }
+
             $order->setState(
                 Mage_Sales_Model_Order::STATE_PROCESSING,
                 true,
@@ -210,6 +241,29 @@ class UltraDev_PagHiperPix_Helper_Order extends Mage_Core_Helper_Abstract
             $payment->save();
             $order->save();
         }
+    }
+
+    /**
+     * Verifica se já existe um pedido nosso com esse transaction_id.
+     * Usado pelo controller pra descartar, sem sair da loja, notificações
+     * pra transaction_id que nunca foram geradas por este módulo.
+     *
+     * @param string $transactionId
+     * @return Mage_Sales_Model_Order|null
+     */
+    public function findOrderByTransactionId($transactionId)
+    {
+        if (!$transactionId) {
+            return null;
+        }
+
+        $collection = Mage::getModel('sales/order')->getCollection()
+            ->addFieldToFilter('paghiperpix_transactionid', $transactionId)
+            ->setPageSize(1);
+
+        $order = $collection->getFirstItem();
+
+        return ($order && $order->getId()) ? $order : null;
     }
 
     /**
