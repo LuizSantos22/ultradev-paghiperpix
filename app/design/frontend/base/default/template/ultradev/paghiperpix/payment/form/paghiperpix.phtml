@@ -1,0 +1,9 @@
+<?php
+/** @var Mage_Payment_Block_Form $this */
+$method = $this->getMethod();
+?>
+<ul class="form-list" id="payment_form_<?php echo $method->getCode(); ?>" style="display:none;">
+    <li>
+        <p><?php echo $this->escapeHtml($method->getInformation() ?: 'O QR Code Pix e o código copia-e-cola serão exibidos na página de confirmação do pedido.'); ?></p>
+    </li>
+</ul>
