@@ -1,0 +1,34 @@
+<?php
+/** @var Mage_Payment_Block_Info $this */
+$info = $this->getInfo();
+$status = $info->getAdditionalInformation('paghiperpix_status');
+$transactionId = $info->getAdditionalInformation('paghiperpix_transactionid');
+$dueDate = $info->getAdditionalInformation('paghiperpix_duedate');
+
+$statusLabels = [
+    'pending'   => 'Aguardando pagamento',
+    'paid'      => 'Pago',
+    'completed' => 'Pago',
+    'canceled'  => 'Cancelado',
+    'refunded'  => 'Reembolsado',
+];
+?>
+<dl class="paghiperpix-info">
+    <dt><?php echo $this->__('Método de pagamento'); ?></dt>
+    <dd>Pix (PagHiper)</dd>
+
+    <?php if ($transactionId): ?>
+    <dt><?php echo $this->__('ID da transação'); ?></dt>
+    <dd><?php echo $this->escapeHtml($transactionId); ?></dd>
+    <?php endif; ?>
+
+    <?php if ($status): ?>
+    <dt><?php echo $this->__('Status do Pix'); ?></dt>
+    <dd><?php echo $this->escapeHtml($statusLabels[$status] ?? $status); ?></dd>
+    <?php endif; ?>
+
+    <?php if ($dueDate): ?>
+    <dt><?php echo $this->__('Vencimento'); ?></dt>
+    <dd><?php echo $this->escapeHtml($dueDate); ?></dd>
+    <?php endif; ?>
+</dl>
