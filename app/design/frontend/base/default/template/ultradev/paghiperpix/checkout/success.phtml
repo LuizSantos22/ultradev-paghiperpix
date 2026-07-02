@@ -1,0 +1,73 @@
+<?php
+/** @var Mage_Core_Block_Template $this */
+
+$orderId = Mage::getSingleton('checkout/session')->getLastOrderId();
+$order = Mage::getModel('sales/order')->load($orderId);
+
+if (!$order || !$order->getId()) {
+    return;
+}
+
+$payment = $order->getPayment();
+$isPagHiperPix = $payment->getMethod() === 'ultradev_paghiperpix';
+
+if (!$isPagHiperPix) {
+    return;
+}
+
+$qrCodeBase64 = $order->getData('paghiperpix_qrcodebase64');
+$emv = $order->getData('paghiperpix_emv');
+$dueDate = $order->getData('paghiperpix_duedate');
+
+$helper = Mage::helper('ultradev_paghiperpix');
+$checkStatusUrl = $helper->getCheckStatusUrl();
+$pollingInterval = $helper->getPollingInterval();
+$incrementId = $order->getIncrementId();
+
+if (!$qrCodeBase64 || !$emv) { ?>
+    <div class="paghiperpix-box paghiperpix-box--error">
+        <p>Não foi possível gerar o QR Code Pix. Por favor, entre em contato com a loja informando o número do pedido <strong><?php echo $this->escapeHtml($incrementId); ?></strong>.</p>
+    </div>
+<?php
+    return;
+}
+?>
+
+<div class="paghiperpix-box" id="paghiperpix-box" data-order-id="<?php echo $this->escapeHtml($incrementId); ?>">
+    <div id="paghiperpix-pending">
+        <h2 class="paghiperpix-title">Pague com Pix para confirmar seu pedido</h2>
+
+        <?php if ($dueDate): ?>
+            <p class="paghiperpix-duedate">Válido até <strong><?php echo $this->escapeHtml($dueDate); ?></strong></p>
+        <?php endif; ?>
+
+        <div class="paghiperpix-qrcode">
+            <img src="data:image/png;base64,<?php echo $qrCodeBase64; ?>" alt="QR Code Pix" width="220" height="220" />
+        </div>
+
+        <p class="paghiperpix-instructions">Abra o app do seu banco, escolha pagar com Pix e escaneie o código acima, ou use o código "copia e cola" abaixo:</p>
+
+        <div class="paghiperpix-emv">
+            <input type="text" id="paghiperpix-emv-input" value="<?php echo $this->escapeHtml($emv); ?>" readonly />
+            <button type="button" id="paghiperpix-copy-btn" class="button">Copiar código</button>
+        </div>
+        <span id="paghiperpix-copy-feedback" class="paghiperpix-copy-feedback"></span>
+
+        <p class="paghiperpix-status" id="paghiperpix-status-text">
+            <span class="paghiperpix-spinner"></span> Aguardando confirmação do pagamento...
+        </p>
+    </div>
+
+    <div id="paghiperpix-paid" style="display:none;">
+        <h2 class="paghiperpix-title paghiperpix-title--success">Pagamento confirmado!</h2>
+        <p>Recebemos seu Pix e seu pedido já está sendo processado. Obrigado pela compra!</p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    UltraDevPagHiperPix.init({
+        checkStatusUrl: <?php echo json_encode($checkStatusUrl); ?>,
+        orderId: <?php echo json_encode($incrementId); ?>,
+        pollingInterval: <?php echo (int) $pollingInterval; ?>
+    });
+</script>
