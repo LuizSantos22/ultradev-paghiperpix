@@ -7,6 +7,11 @@ class UltraDev_PagHiperPix_OrderController extends Mage_Core_Controller_Front_Ac
      * responde com o token do lojista para obter o status completo,
      * e atualiza o pedido no Magento.
      *
+     * Antes de chamar a API da PagHiper, valida que o transaction_id
+     * recebido já pertence a um pedido gerado por este módulo — evita
+     * que POSTs arbitrários (transaction_id inventado) gerem chamadas
+     * de saída desnecessárias para a PagHiper.
+     *
      * Rota: /paghiperpix/order/update
      */
     public function updateAction()
@@ -28,6 +33,17 @@ class UltraDev_PagHiperPix_OrderController extends Mage_Core_Controller_Front_Ac
         if (empty($data['transaction_id'])) {
             $this->getResponse()->setHttpResponseCode(400);
             $this->getResponse()->setBody(json_encode(['error' => 'transaction_id ausente']));
+            return;
+        }
+
+        $knownOrder = $this->orderHelper()->findOrderByTransactionId($data['transaction_id']);
+
+        if (!$knownOrder) {
+            $this->helper()->log(
+                'PagHiperPix - notificação descartada: transaction_id ' . $data['transaction_id'] . ' não corresponde a nenhum pedido conhecido.'
+            );
+            $this->getResponse()->setHttpResponseCode(404);
+            $this->getResponse()->setBody(json_encode(['error' => 'transaction_id desconhecido']));
             return;
         }
 
