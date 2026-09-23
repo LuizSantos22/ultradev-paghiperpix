@@ -11,12 +11,14 @@ class UltraDev_PagHiperPix_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function getApiKey()
     {
-        return trim((string) Mage::getStoreConfig(self::XML_PATH_PAYMENT . 'apikey'));
+        $value = Mage::getStoreConfig(self::XML_PATH_PAYMENT . 'apikey');
+        return trim((string) Mage::helper('core')->decrypt($value));
     }
 
     public function getToken()
     {
-        return trim((string) Mage::getStoreConfig(self::XML_PATH_PAYMENT . 'token'));
+        $value = Mage::getStoreConfig(self::XML_PATH_PAYMENT . 'token');
+        return trim((string) Mage::helper('core')->decrypt($value));
     }
 
     public function getConfig($field)
