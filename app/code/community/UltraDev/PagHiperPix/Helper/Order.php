@@ -75,13 +75,14 @@ class UltraDev_PagHiperPix_Helper_Order extends Mage_Core_Helper_Abstract
         $pixCode = $result['pix_code'] ?? [];
 
         $additional = [
-            'paghiperpix_transactionid' => $result['transaction_id'] ?? '',
-            'paghiperpix_qrcodebase64'  => $pixCode['qrcode_base64'] ?? '',
-            'paghiperpix_qrcodeurl'     => $pixCode['qrcode_image_url'] ?? '',
-            'paghiperpix_emv'           => $pixCode['emv'] ?? '',
-            'paghiperpix_status'        => $result['status'] ?? 'pending',
-            'paghiperpix_duedate'       => $result['due_date'] ?? '',
-        ];
+    'paghiperpix_transactionid' => $result['transaction_id'] ?? '',
+    'paghiperpix_qrcodebase64'  => $pixCode['qrcode_base64'] ?? '',
+    'paghiperpix_qrcodeurl'     => $pixCode['qrcode_image_url'] ?? '',
+    'paghiperpix_emv'           => $pixCode['emv'] ?? '',
+    'paghiperpix_viewurl'       => $pixCode['pix_url'] ?? '',
+    'paghiperpix_status'        => $result['status'] ?? 'pending',
+    'paghiperpix_duedate'       => $result['due_date'] ?? '',
+];
 
         $order = Mage::getModel('sales/order')->loadByIncrementId($data['order_id']);
         $this->addInformation($order, $additional);
@@ -176,6 +177,9 @@ class UltraDev_PagHiperPix_Helper_Order extends Mage_Core_Helper_Abstract
         }
         if (!empty($pixCode['qrcode_image_url'])) {
             $additional['paghiperpix_qrcodeurl'] = $pixCode['qrcode_image_url'];
+        }
+        if (!empty($pixCode['pix_url'])) {
+            $additional['paghiperpix_viewurl'] = $pixCode['pix_url'];
         }
 
         $this->addInformation($order, $additional);
