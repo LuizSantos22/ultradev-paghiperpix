@@ -27,7 +27,6 @@ $countdownEndMs = (strtotime($order->getCreatedAt()) + 1800) * 1000;
 $isInline = (bool) $this->getIsInline();
 unset($dueDate); // do not show due date, countdown covers it up
 
-
 $helper = Mage::helper('ultradev_paghiperpix');
 $checkStatusUrl = $helper->getCheckStatusUrl();
 $pollingInterval = $helper->getPollingInterval();
