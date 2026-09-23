@@ -108,3 +108,73 @@
     border-color: #b73741;
     color: #b73741;
 }
+
+.paghiperpix-viewlink {
+    display: block;
+    font-size: 12px;
+    color: #2c85c8;
+    margin-bottom: 10px;
+    text-decoration: underline;
+}
+
+.paghiperpix-countdown {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e08a1e;
+    margin-bottom: 10px;
+}
+
+.paghiperpix-countdown.is-expired {
+    color: #b73741;
+    font-weight: 500;
+}
+
+.paghiperpix-box--inline {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fafbfc;
+    padding: 12px;
+    margin: 10px 0 0;
+    max-width: 240px;
+    text-align: left;
+}
+
+.paghiperpix-box--inline .paghiperpix-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #444;
+    text-align: left;
+}
+
+.paghiperpix-box--inline .paghiperpix-qrcode img {
+    width: 100%;
+    height: auto;
+    max-width: 160px;
+    margin: 0 0 14px;
+}
+
+.paghiperpix-box--inline .paghiperpix-emv {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+.paghiperpix-box--inline .paghiperpix-emv input {
+    font-size: 10px;
+    word-break: break-all;
+    white-space: normal;
+}
+
+.paghiperpix-box--inline .paghiperpix-emv .button {
+    width: 100%;
+}
+
+.paghiperpix-box--inline .paghiperpix-instructions {
+    font-size: 12px;
+}
+
+.paghiperpix-box--inline .paghiperpix-status,
+.paghiperpix-box--inline .paghiperpix-countdown {
+    justify-content: flex-start;
+}
