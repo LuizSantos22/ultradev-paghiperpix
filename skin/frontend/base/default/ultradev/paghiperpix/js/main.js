@@ -8,6 +8,7 @@ var UltraDevPagHiperPix = (function () {
     };
 
     var pollTimer = null;
+    var countdownTimer = null;
 
     function $(id) {
         return document.getElementById(id);
@@ -86,6 +87,10 @@ var UltraDevPagHiperPix = (function () {
             window.clearInterval(pollTimer);
             pollTimer = null;
         }
+        if (countdownTimer) {
+            window.clearInterval(countdownTimer);
+            countdownTimer = null;
+        }
 
         var pending = $('paghiperpix-pending');
         var paid = $('paghiperpix-paid');
@@ -98,12 +103,44 @@ var UltraDevPagHiperPix = (function () {
         }
     }
 
+    function startCountdown(endTimestamp) {
+        var el = $('paghiperpix-countdown');
+        if (!el || !endTimestamp) {
+            return;
+        }
+
+        function tick() {
+            var remaining = endTimestamp - Date.now();
+
+            if (remaining <= 0) {
+                el.textContent = 'Tempo recomendado esgotado — o Pix ainda pode ser pago, mas gere um novo código se preferir.';
+                el.className = 'paghiperpix-countdown is-expired';
+                window.clearInterval(countdownTimer);
+                countdownTimer = null;
+                return;
+            }
+
+            var totalSeconds = Math.floor(remaining / 1000);
+            var minutes = Math.floor(totalSeconds / 60);
+            var seconds = totalSeconds % 60;
+            el.textContent = 'Expira em ' + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        tick();
+        countdownTimer = window.setInterval(tick, 1000);
+    }
+
     function init(options) {
         config = Object.assign({}, config, options || {});
 
         var copyBtn = $('paghiperpix-copy-btn');
         if (copyBtn) {
             copyBtn.addEventListener('click', copyEmv);
+        }
+
+        var box = $('paghiperpix-box');
+        if (box && box.dataset.countdownEnd) {
+            startCountdown(parseInt(box.dataset.countdownEnd, 10));
         }
 
         if (config.checkStatusUrl && config.orderId) {
