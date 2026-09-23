@@ -95,9 +95,8 @@ class UltraDev_PagHiperPix_OrderController extends Mage_Core_Controller_Front_Ac
             return;
         }
 
-        $status = $order->getData('paghiperpix_status');
-        $paid = in_array($status, ['paid', 'completed'], true)
-            || $order->getState() === Mage_Sales_Model_Order::STATE_PROCESSING;
+       $status = $order->getData('paghiperpix_status');
+$paid = in_array($status, ['paid', 'completed'], true);
 
         $this->getResponse()->setBody(json_encode([
             'paid'          => $paid,
