@@ -1,7 +1,11 @@
 <?php
 /** @var Mage_Core_Block_Template $this */
 
-$orderId = Mage::getSingleton('checkout/session')->getLastOrderId();
+$session = Mage::getSingleton('checkout/session');
+$orderId = $session->getLastOrderId();
+if (!$orderId) {
+    $orderId = $session->getLastRealOrderId() ? $session->getLastRealOrder()->getId() : null;
+}
 $order = Mage::getModel('sales/order')->load($orderId);
 
 if (!$order || !$order->getId()) {
@@ -9,7 +13,7 @@ if (!$order || !$order->getId()) {
 }
 
 $payment = $order->getPayment();
-$isPagHiperPix = $payment->getMethod() === 'ultradev_paghiperpix';
+$isPagHiperPix = $payment && $payment->getMethod() === 'ultradev_paghiperpix';
 
 if (!$isPagHiperPix) {
     return;
@@ -18,6 +22,11 @@ if (!$isPagHiperPix) {
 $qrCodeBase64 = $order->getData('paghiperpix_qrcodebase64');
 $emv = $order->getData('paghiperpix_emv');
 $dueDate = $order->getData('paghiperpix_duedate');
+$viewUrl = $order->getData('paghiperpix_viewurl');
+$countdownEndMs = (strtotime($order->getCreatedAt()) + 1800) * 1000;
+$isInline = (bool) $this->getIsInline();
+unset($dueDate); // do not show due date, countdown covers it up
+
 
 $helper = Mage::helper('ultradev_paghiperpix');
 $checkStatusUrl = $helper->getCheckStatusUrl();
@@ -33,14 +42,9 @@ if (!$qrCodeBase64 || !$emv) { ?>
 }
 ?>
 
-<div class="paghiperpix-box" id="paghiperpix-box" data-order-id="<?php echo $this->escapeHtml($incrementId); ?>">
+<div class="paghiperpix-box<?php echo $isInline ? ' paghiperpix-box--inline' : ''; ?>" id="paghiperpix-box" data-order-id="<?php echo $this->escapeHtml($incrementId); ?>" data-countdown-end="<?php echo (int) $countdownEndMs; ?>">
     <div id="paghiperpix-pending">
         <h2 class="paghiperpix-title">Pague com Pix para confirmar seu pedido</h2>
-
-        <?php if ($dueDate): ?>
-            <p class="paghiperpix-duedate">Válido até <strong><?php echo $this->escapeHtml($dueDate); ?></strong></p>
-        <?php endif; ?>
-
         <div class="paghiperpix-qrcode">
             <img src="data:image/png;base64,<?php echo $qrCodeBase64; ?>" alt="QR Code Pix" width="220" height="220" />
         </div>
@@ -52,6 +56,12 @@ if (!$qrCodeBase64 || !$emv) { ?>
             <button type="button" id="paghiperpix-copy-btn" class="button">Copiar código</button>
         </div>
         <span id="paghiperpix-copy-feedback" class="paghiperpix-copy-feedback"></span>
+
+        <?php if ($viewUrl): ?>
+            <a href="<?php echo $this->escapeHtml($viewUrl); ?>" target="_blank" rel="noopener" class="paghiperpix-viewlink">Visualizar Pix na PagHiper</a>
+        <?php endif; ?>
+
+        <p class="paghiperpix-countdown" id="paghiperpix-countdown"></p>
 
         <p class="paghiperpix-status" id="paghiperpix-status-text">
             <span class="paghiperpix-spinner"></span> Aguardando confirmação do pagamento...
