@@ -16,4 +16,23 @@
             </reference>
         </reference>
     </checkout_onepage_success>
+
+    <ultradev_checkout_index_success translate="label">
+        <reference name="head">
+            <action method="addCss">
+                <stylesheet>ultradev/paghiperpix/css/paghiperpix.css</stylesheet>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>ultradev/paghiperpix/js/main.js</name>
+            </action>
+        </reference>
+        <!-- Bloco solto (sem reference): é criado, mas só aparece onde o
+             success.phtml do ultradev-checkout chamar getBlock() -->
+        <block type="core/template" name="ultradev.paghiperpix.inline" template="ultradev/paghiperpix/checkout/success.phtml">
+            <action method="setIsInline">
+                <value>1</value>
+            </action>
+        </block>
+    </ultradev_checkout_index_success>
 </layout>
